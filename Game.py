@@ -17,64 +17,78 @@ class Game:
         self.characters = []
         # Bad guys
         # No 1
-        mouse = Card(1, "Mouse", "None", "None", "deck", False)
+        mouse = Card(1, "Mouse", None, None, "deck", False)
         self.characters.append(mouse)
         
         # No 2
-        frog = Card(2, "Frog", "None", "None", "deck", False)
+        frog = Card(2, "Frog", None, None, "deck", False)
         self.characters.append(frog)
         
         # No 3
-        josh = Card(3, "Joshua", "None", "None", "deck", False)
-        self.characters.append(josh)
+        # josh = Card(3, "Joshua", skill, "max_cards", "deck", False)
+        # self.characters.append(josh)
+
+        skill_4={"target": "highest_green", "effect": "move_to_deck_bottom", "value": 2}
 
         # No 4
-        travis = Card(4, "N4", "None", "None", "deck", False)
+        travis = Card(4, "N4", skill_4, "min_green", "deck", False)
         self.characters.append(travis)
 
+        skill_5={"target": "specific_card", "effect": "injure", "value": 14}
+
         # No 5
-        cindi = Card(5, "Cindirella", "None", "None", "deck", False)
+        cindi = Card(5, "Cindirella", skill_5, "specific_card", "deck", False)
         self.characters.append(cindi)
 
+        skill_6={"target": "highest_green", "effect": "injure", "value": 3}
+
         # No 6
-        harman = Card(6, "Harman", "None", "None", "deck", False)
+        harman = Card(6, "Harman", skill_6, "min_cards", "deck", False)
         self.characters.append(harman)
 
-        # No 7
-        chick = Card(7, "Some_chick", "None", "None", "deck", False)
-        self.characters.append(chick)
+        # skill_7={"target": "specific_pair", "effect": "injure", "value": 15}
+
+        # # No 7
+        # chick = Card(7, "Some_chick", skill_7, "specific_card", "deck", False)
+        # self.characters.append(chick)
         
+        skill_8={"target": "lowest_red", "effect": "move_other_room", "value": 3}
+
         # No 8
-        bad_boy = Card(8, "Lance", "None", "None", "deck", False)
+        bad_boy = Card(8, "Lance", skill_8, None, "deck", False)
         self.characters.append(bad_boy)
         
         # Good guys
         # No 11
-        boyfriend = Card(11, "boyfriend", "None", "None", "deck", True)
-        self.characters.append(boyfriend)
+        # boyfriend = Card(11, "boyfriend", skill, "None", "deck", True)
+        # self.characters.append(boyfriend)
 
         # No 12
-        bond = Card(12, "bond", "None", "None", "deck", True)
-        self.characters.append(bond)
+        # bond = Card(12, "bond", skill, "None", "deck", True)
+        # self.characters.append(bond)
+
+        skill_13={"target": "lowest_red", "effect": "injure", "value": 11}
 
         # No 13
-        girlfriend = Card(13, "girlfriend", "None", "None", "deck", True)
+        girlfriend = Card(13, "girlfriend", skill_13, "specific_card", "deck", True)
         self.characters.append(girlfriend)
 
+        skill_14={"target": "lowest_red", "effect": "injure", "value": 3}
+
         # No 14
-        nathan = Card(14, "Nathan", "None", "None", "deck", True)
+        nathan = Card(14, "Nathan", skill_14, "max_cards", "deck", True)
         self.characters.append(nathan)
 
         # No 15
-        nina = Card(15, "Nina", "None", "None", "deck", True)
+        nina = Card(15, "Nina", None, None, "deck", True)
         self.characters.append(nina)
 
         # No 16
-        little_max = Card(16, "Max", "None", "None", "deck", True)
+        little_max = Card(16, "Max", None, None, "deck", True)
         self.characters.append(little_max)
 
         # No 17
-        kiba = Card(17, "Kiba", "None", "None", "deck", True)
+        kiba = Card(17, "Kiba", None, None, "deck", True)
         self.characters.append(kiba)
 
     def get_card_by_id(self, id):
@@ -90,6 +104,18 @@ class Game:
             card (Card): The card to be added to the deck.
         """
         self.deck.append(card)
+    
+    def add_card_to_room(self, card, room):
+        """Adds a card to the specified room."""
+        if room not in [self.red_room, self.blue_room]:
+            raise ValueError("Invalid room specified")
+        
+        if room is self.red_room:
+            card.place = "red_room"
+        if room is self.blue_room:
+            card.place = "blue_room"
+
+        room.append(card)
 
     def lvl1(self):
         playing_characters = [self.get_card_by_id(1),self.get_card_by_id(15), self.get_card_by_id(2), self.get_card_by_id(16)]
@@ -127,18 +153,6 @@ class Game:
             destination.append(card)
         else:
             raise ValueError("Card not found in the source array.")
-
-    def display_cards(self, location):
-        """
-        Display the cards in a specified location.
-
-        Args:
-            location (list): The card array to display.
-
-        Returns:
-            str: A formatted string listing the cards.
-        """
-        return "\n".join(card.display_card() for card in location)
 
     def shuffle_deck(self):
         """
@@ -208,3 +222,72 @@ class Game:
         for card in room:
             print(card.id)
         
+    def apply_skill(self, card, room):
+        """Applies a card's skill based on its condition and target."""
+        if not card.skill:
+            return
+
+        # Determine if condition is met
+        condition_met = False
+        if card.condition == "min_cards" and len(room) <= card.skill["value"]:
+            condition_met = True
+        elif card.condition == "max_cards" and len(room) >= card.skill["value"]:
+            condition_met = True
+        elif card.condition == "min_green" and sum(1 for c in room if c.good) >= card.skill["value"]:
+            condition_met = True
+        elif card.condition == "specific_card" and any(c.id == card.skill["value"] for c in room):
+            condition_met = True
+        elif card.condition is None:
+            condition_met = True  # No condition required
+
+        if not condition_met:
+            return
+
+        # Determine target based on skill
+        target = None
+        if card.skill["target"] == "next_deck":
+            if self.deck:
+                target = self.deck[0]
+        elif card.skill["target"] == "highest_green":
+            target = max((c for c in room if c.good), key=lambda c: c.id, default=None)
+        elif card.skill["target"] == "lowest_red":
+            target = min((c for c in room if not c.good), key=lambda c: c.id, default=None)
+        # elif card.skill["target"] == "specific_pair":
+        #     if all(self.get_card_by_id(cid) in room for cid in card.skill["value"]):
+        #         target = [self.get_card_by_id(cid) for cid in card.skill["value"]]
+        elif card.skill["target"] == "any":
+            target = room  # Affect all cards in the room
+        elif card.skill["target"] == "specific_card":
+            target = card.skill["value"]
+
+        if not target:
+            return
+
+        # Apply skill effect
+        if card.skill["effect"] == "move_other_room":
+            for t in (target if isinstance(target, list) else [target]):
+                self.switch_room(t, room)
+        elif card.skill["effect"] == "move_to_deck_bottom":
+            for t in (target if isinstance(target, list) else [target]):
+                self.deck.append(t)
+                room.remove(t)
+        elif card.skill["effect"] == "injure":
+            for t in (target if isinstance(target, list) else [target]):
+                self.basement.append(t)
+                room.remove(t)
+        elif card.skill["effect"] == "move_to_room":
+            for t in (target if isinstance(target, list) else [target]):
+                room.append(t)
+
+    def resolve_room(self, room):
+        self.bubble_sort_cards_by_id(room)
+        injured = []
+        
+        for card in room[:]:
+            self.apply_skill(card, room)
+        
+        if injured:
+            if any(card.id == 6 for card in injured):
+                return "FUGA"
+            return "SANGRE"
+        return "SILENCIO"

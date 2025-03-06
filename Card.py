@@ -26,15 +26,6 @@ class Card:
         """
         return f"Card(id={self.id}, name='{self.name}', skill='{self.skill}', condition='{self.condition}', place='{self.place}')"
 
-    def update_condition(self, new_condition):
-        """
-        Update the condition of the card.
-
-        Args:
-            new_condition (str): The new condition of the card.
-        """
-        self.condition = new_condition
-
     def display_card(self):
         """
         Display the card's attributes in a formatted string.
@@ -47,6 +38,3 @@ class Card:
             f"Place: {self.place}\n"
         )
 
-# Example usage:
-# card = Card(1, "Warrior", "Sword Mastery", "Excellent")
-# print(card.display_card())
