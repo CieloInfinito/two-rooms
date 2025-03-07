@@ -103,6 +103,8 @@ class Game:
         Args:
             card (Card): The card to be added to the deck.
         """
+        print("Card added to deck:")
+        print(card)
         self.deck.append(card)
     
     def add_card_to_room(self, card, room):
@@ -114,7 +116,8 @@ class Game:
             card.place = "red_room"
         if room is self.blue_room:
             card.place = "blue_room"
-
+        print(f"Card added to {card.place}:")
+        print(card)
         room.append(card)
 
     def lvl1(self):
