@@ -17,7 +17,7 @@ class Game:
         self.characters = []
         # Bad guys
         # No 1
-        mouse = Card(1, "Mouse", None, None, "deck", False)
+        mouse = Card(21, "Mouse", None, None, "deck", False)
         self.characters.append(mouse)
         
         # No 2
@@ -276,18 +276,22 @@ class Game:
                 room.remove(t)
         elif card.skill["effect"] == "injure":
             for t in (target if isinstance(target, list) else [target]):
+                t.place = "basement"
                 self.basement.append(t)
                 room.remove(t)
+                return True
         elif card.skill["effect"] == "move_to_room":
             for t in (target if isinstance(target, list) else [target]):
                 room.append(t)
+
+        return False
 
     def resolve_room(self, room):
         self.bubble_sort_cards_by_id(room)
         injured = []
         
         for card in room[:]:
-            self.apply_skill(card, room)
+            if self.apply_skill(card, room): injured.append(card)
         
         if injured:
             if any(card.id == 6 for card in injured):
