@@ -4,8 +4,11 @@ from Card import Card
 
 @dataclass
 class PlayingCharacters:
-    no_1: Card = field(default_factory=lambda: Card(21, "Mouse"))
+    no_1: Card = field(default_factory=lambda: Card(1, "Mouse"))
     no_2: Card = field(default_factory=lambda: Card(2, "Frog"))
+
+    # no 3
+
     no_4: Card = field(default_factory=lambda: Card(
         4, "N4", {"target": "highest_green", "effect": "move_to_deck_bottom", "value": 2},
         "min_green", False))
@@ -15,9 +18,18 @@ class PlayingCharacters:
     no_6: Card = field(default_factory=lambda: Card(
         6, "Harman", {"target": "highest_green", "effect": "injure", "value": 3},
         "max_cards", False))
+    
+    # no 7
+
     no_8: Card = field(default_factory=lambda: Card(
         8, "Lance", {"target": "lowest_red", "effect": "move_other_room", "value": 3},
         None, False))
+    
+    # no 11
+
+    # no 12
+
+
     no_13: Card = field(default_factory=lambda: Card(
         13, "girlfriend", {"target": "lowest_red", "effect": "injure", "value": 11},
         "specific_card", True))
